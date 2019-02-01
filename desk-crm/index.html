@@ -1096,12 +1096,7 @@ ng-if="includeCommentsTool">
 <div ng-if=" deviceTemplate.deviceType == 'phone' && !! shareUrl " class="tool share-sms-tool">
 <a ng-click="toggleSmsShareForm()"><span class="toolbar-menu-device"></span></a>
 </div>
-<div
-ng-show="includeBrowseTool"
-ng-class="{ active: tourSubView == 'thumbnails' }"
-class="tool browse-toggle-tool">
-<a ng-click="toggleBrowse()" ng-class="{ on: isBrowseOpen }"><span class="toolbar-menu-sprite"></span></a>
-</div>
+
 <div
 ng-show="includeCommentsTool"
 ng-class="{

@@ -39,6 +39,18 @@
 	<link type="text/css" rel="stylesheet" href="assets/apps/share/css/bootstrap.css">
 	<link type="text/css" rel="stylesheet" href="assets/apps/share/css/intlTelInput.css">
 	<link type="text/css" rel="stylesheet" href="assets/apps/share/css/share-offline.css">
+
+	<!-- Hotjar Tracking Code for https://github.com/iadvize/design-user-testing-tool/ -->
+	<script>
+		(function(h,o,t,j,a,r){
+			h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+			h._hjSettings={hjid:1176056,hjsv:6};
+			a=o.getElementsByTagName('head')[0];
+			r=o.createElement('script');r.async=1;
+			r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+			a.appendChild(r);
+		})(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+	</script>
 </head>
 <body
 	class="branding-invision"
@@ -113,26 +125,6 @@
 	<!-- In order to be able to disable horizontal scrolling for some screens, we need to wrap the view in order to be able to maintain screen alignment -->
 
 	<div class="desktop-wrapper">
-
-		<!-- Tour Points -->
-		<div
-			ng-if=" subview == 'preview' "
-			ng-include=" '/assets/apps/share/views/preview/preview-tour-comments.htm' "></div>
-
-		<div
-			ng-if="subview == 'comments'"
-			ng-include=" '/assets/apps/share/views/comments/comments.htm' "></div>
-
-		<div
-			ng-if="subview == 'preview'"
-			is-share-loaded="{{!isLoadingOpen}}"
-			inv-preview-auto-redirect-listener
-			ng-include=" '/assets/apps/share/views/preview/preview.htm' "></div>
-
-		<!-- Screens for comment mode -->
-		<div
-			ng-show="subview == 'comments'"
-			ng-include=" '/assets/apps/share/views/screens/screens.htm' "c></div>
 
 	</div>
 

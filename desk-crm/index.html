@@ -1018,22 +1018,6 @@ Looks like you're running in &quot;compatibility mode&quot;, simply follow these
 No thanks, continue...
 </a>
 </div></script><script type="text/ng-template" id="/assets/apps/share/views/powered-by/powered-by.htm"><!-- Hide this object for a specific customer project shares. Everyone else should see it. -->
-<div ng-hide="project.companyID == 71">
-<a
-ng-if=" !project.isMobile || share.isEmbed "
-class="powered-by"
-href="http://www.invisionapp.com/?utm_medium=virality&utm_source=Share%20CTA"
-target="_blank">
-<img src="assets/apps/share/img/made-with-invision.png" />
-</a>
-<a
-ng-if="project.isMobile && !share.isEmbed"
-class="mobile-powered-by"
-href="http://www.invisionapp.com/?utm_medium=virality&utm_source=Share%20CTA"
-target="_blank">
-made with InVision
-</a>
-</div>
 </script><script type="text/ng-template" id="/assets/apps/share/views/toolbar/toolbar.htm">
 <div
 ng-controller="toolbar.ToolbarController"

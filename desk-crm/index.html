@@ -634,7 +634,9 @@ inv-mobile-transition-layer
 id="mobile_transition_layer"
 class="{{ deviceTemplate.className }} {{ chromeClass }}"></div>
 <inv-share-screen-viewer></inv-share-screen-viewer>
-
+<div class="slideshow-nav">
+<div class="slideshow-status" ng-show=" ! project.isMobile " >{{ currentScreenIndex }} of {{ screenCount }}</div>
+</div>
 </div>
 </script><script type="text/ng-template" id="/assets/apps/share/views/preview/tour-point-form.htm"><form
 ng-controller="comments.FormController"
@@ -1035,7 +1037,6 @@ made with InVision
 </script><script type="text/ng-template" id="/assets/apps/share/views/toolbar/toolbar.htm">
 <div
 ng-controller="toolbar.ToolbarController"
-ng-show="( includeBrowseTool || includeCommentsTool )"
 ng-mouseenter="updateIsUserOverToolbar( true )"
 ng-mouseleave="updateIsUserOverToolbar( false )"
 ng-hide="share.isEmbed"

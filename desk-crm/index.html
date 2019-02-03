@@ -2282,8 +2282,12 @@ width="{{ Math.round(picture.width * (picture.displayScale || screen.displayScal
 </div><!-- inner2 -->
 </div> <!-- inner -->
 </script>
-	
 
+<script>
+	$(document).on("click", ".hotspot", function(){
+		location.reload(true);
+	});
+</script>
 
 </body>
 </html>

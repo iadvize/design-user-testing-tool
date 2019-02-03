@@ -74,6 +74,12 @@
 
 	gtag('config', 'UA-130318030-1');
 	</script>
+
+	<script>
+		$(document).on("click", ".hotspot", function(){
+			console.log("clic");
+		});
+	</script>
 </head>
 <body
 	class="branding-invision"
@@ -2281,13 +2287,6 @@ width="{{ Math.round(picture.width * (picture.displayScale || screen.displayScal
 </div> <!-- current-picture -->
 </div><!-- inner2 -->
 </div> <!-- inner -->
-</script>
-
-<script>
-	$(document).on("click", ".hotspot", function(){
-		location.reload(true);
-		console.log("clic");
-	});
 </script>
 
 </body>

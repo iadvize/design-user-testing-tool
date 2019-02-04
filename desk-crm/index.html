@@ -1,5 +1,5 @@
 
-<html ng-app="InVision" ng-controller="AppController" lang="en">
+<html ng-app="InVision" ng-controller="AppController" inv-key-combos lang="en">
 <head>
 	<meta charset="utf-8" />
 	<title ng-bind="windowTitle">
@@ -369,7 +369,7 @@ ng-class="{ selected: ( displayItem == selectedScreen ) }">
 </script><script type="text/ng-template" id="/assets/apps/share/views/browse/browse.htm">
 <div
 ng-controller="browse.BrowseController"
-
+inv-browse-key-combos
 class="m-browse"
 ng-class="{
 mobile: project.isMobile,
@@ -653,7 +653,7 @@ class="{{ deviceTemplate.className }} {{ chromeClass }}"></div>
 </script><script type="text/ng-template" id="/assets/apps/share/views/preview/tour-point-form.htm"><form
 ng-controller="comments.FormController"
 ng-submit="submitForm()"
-
+inv-comments-tour-form-key-combos
 inv-tour-comments-form
 class="conversation comment-thread-container tour-point-form">
 <div class="comment-thread tour-point">

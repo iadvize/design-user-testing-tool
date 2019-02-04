@@ -1,4 +1,5 @@
-<html ng-app="InVision" ng-controller="AppController" lang="en">
+
+<html ng-app="InVision" ng-controller="AppController" inv-key-combos lang="en">
 <head>
 	<meta charset="utf-8" />
 	<title ng-bind="windowTitle">
@@ -368,7 +369,6 @@ ng-class="{ selected: ( displayItem == selectedScreen ) }">
 </script><script type="text/ng-template" id="/assets/apps/share/views/browse/browse.htm">
 <div
 ng-controller="browse.BrowseController"
-inv-browse-key-combos
 class="m-browse"
 ng-class="{
 mobile: project.isMobile,

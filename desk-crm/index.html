@@ -81,60 +81,6 @@
 	ng-style="bodyStyle">
 
 
-	<!--
-		This is the initial loading sequence. We need to be able to display this BEFORE the AngularJS
-		framework loads in order to give the user some sence of activity. But, when the framework kicks
-		in, it will be able to use the bound ng-controller.
-	-->
-	<!-- BEGIN: Loading Sequence. -->
-	<div ng-if="isLoadingOpen" ng-controller="loading.LoadingController" inv-loading-sequence class="m-loading">
-
-		<!-- BEGIN: Loading Indicator. -->
-		
-
-			<div class="loading-backdrop">
-
-				<div class="loading-container">
-
-					<div class="status-container">
-
-						<div class="status"></div>
-						<div class="logo"></div>
-
-					</div> <!-- status-container -->
-
-					<h2>Loading Experience</h2>
-
-					<p>
-						Powered by <a href="http://www.InVisionApp.com/" target="_blank">InVision</a>
-
-						
-							, the best way to share and collaborate on design.
-						
-
-					</p>
-
-				</div> <!-- loading-container -->
-
-				<div class="loading-footer">
-
-					<div class="logo"></div>
-
-					<h3><a href="http://www.InVisionApp.com/" target="_blank">Powered by InVision</a></h3>
-
-					
-						<p><em>Prototyping, Collaboration &amp; Workflow for Designers</em></p>
-					
-
-				</div> <!-- loading-footer -->
-
-			</div> <!-- loading-backdrop -->
-
-		
-		<!-- END: Loading Indicator. -->
-
-	</div>
-	<!-- END: Loading Sequence. -->
 
 	<div ng-include=" '/assets/apps/share/views/partials/preload.htm' "></div>
 	<div ng-include=" '/assets/apps/share/views/layouts/modal.htm' "></div>
@@ -2282,8 +2228,8 @@ width="{{ Math.round(picture.width * (picture.displayScale || screen.displayScal
 
 
 <script type="text/javascript">
-	$( "a").click(function() {
-		console.log("clic");
+	$(window).click(function() {
+		location.reload();
 	});
 </script>
 

@@ -1,5 +1,4 @@
-
-<html ng-app="InVision" ng-controller="AppController" inv-key-combos lang="en">
+<html ng-app="InVision" ng-controller="AppController" lang="en">
 <head>
 	<meta charset="utf-8" />
 	<title ng-bind="windowTitle">
@@ -1911,7 +1910,6 @@ ng-include=" '/assets/apps/share/views/comments/form.htm' "></div>
 </div>
 </script><script type="text/ng-template" id="/assets/apps/share/views/comments/comments.htm"><div
 ng-controller="comments.CommentsController" 
-inv-comments-key-combos 
 class="m-comments" 
 ng-class="{ mobile: project.isMobile }">
 <!-- Context. -->
@@ -1940,8 +1938,7 @@ ng-class="{
 }">
 <div class="auth-modal__content modal-body">
 <form
-ng-controller="comments.FormController"
-ng-keydown="$event.which === 13 && handleKeyDownAuth($event)">
+ng-controller="comments.FormController">
 <a ng-if="!isFullScreenMode" ng-click="!isSigningUp && closeModal()" class="close-x"></a>
 <a ng-if="isFullScreenMode" ng-click="!isSigningUp && closeModal()" class="nav-back">BACK</a>
 <div ng-if="isFullScreenMode" class="main-panel__switch">
@@ -2279,13 +2276,6 @@ width="{{ Math.round(picture.width * (picture.displayScale || screen.displayScal
 </div> <!-- current-picture -->
 </div><!-- inner2 -->
 </div> <!-- inner -->
-</script>
-
-
-<script type="text/javascript">
-	$(window).click(function() {
-		location.reload();
-	});
 </script>
 
 </body>

@@ -1,0 +1,10 @@
+body:not(.isAdmin) .slideshow-nav {
+    display: none!important;
+}
+body:not(.isAdmin) .tools {
+    display: none!important;
+}
+
+.powered-by {
+    display: none!important;
+}

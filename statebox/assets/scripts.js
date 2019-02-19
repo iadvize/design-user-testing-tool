@@ -7573,13 +7573,7 @@ traits.sso = false;
 }
 }
 traits.derived_plan = getPlanAffiliation(user, currentSubscription);
-var context = {
-integrations: {
-Intercom: {
-user_hash: config.intercomUserHash
-}
-}
-};
+var context = {};
 var userID = formatUserId(user.id,vendorPrefixByDefault);
 var callback = function () {
 if ( typeof $window.mixpanel !== "undefined" && $window.mixpanel != null ) {
@@ -7783,16 +7777,6 @@ if (window.loadBraze && isSignedIn){
 window.loadBraze(brazeInit);
 }
 }, 10, false );
-}
-function initIntercomMessenger() {
-if ( window.Intercom ) {
-window.Intercom("boot", {
-app_id: config.intercomAppID,
-user_id: formatUserId( config.userID, vendorPrefixByDefault ),
-email: config.email,
-user_hash: config.intercomUserHash
-});
-}
 }
 function  amplitudeInit() {
 var initParams = {
@@ -8084,7 +8068,6 @@ identifyGrowth: identifyGrowth,
 normalizePaymentTrackingInfo: normalizePaymentTrackingInfo,
 appendGrowthUserAttribute: appendGrowthUserAttribute,
 initGrowthAnalytics: initGrowthAnalytics,
-initIntercomMessenger: initIntercomMessenger,
 track: ($window.analytics && $window.analytics.track) || angular.noop,
 trackGrowth: trackGrowth,
 trackGrowthPage: trackGrowthPage,
@@ -21474,7 +21457,7 @@ var $element = $(element),
 $button = $element.find("button"),
 $copiedText = $(".copied");
 var clip = new ZeroClipboard( $button , {
-moviePath: "/share/common/vendor/zeroclipboard/ZeroClipboard.swf"
+moviePath: "/assets/apps/common/vendor/zeroclipboard/ZeroClipboard.swf"
 });
 clip.on( "complete", function(clip, args) {
 $timeout(function() {

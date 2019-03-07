@@ -1,0 +1,15 @@
+body:not(.isAdmin) .slideshow-nav {
+    display: none!important;
+}
+body:not(.isAdmin) .tools {
+    display: none!important;
+}
+
+#screen_viewer .hotspot {
+    border: none!important;
+    background: none!important;
+}
+
+.powered-by {
+    display: none!important;
+}

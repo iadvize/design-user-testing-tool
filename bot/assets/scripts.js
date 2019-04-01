@@ -5803,14 +5803,6 @@ $rootScope.globalUploadInfo.upload.statusText = 'Initializing Upload...';
 }
 scope.$broadcast('hideUploadOverlay');
 });
-if (screenSourceIntroPref.showScreenSourceModal && config.featureFlags["can-run-server-side-extaction"]) {
-files.every(function(file){
-if( isSourceFile(file.name) && _uploadType !== "boardItem" && _uploadType !== "boardPhotoHeader" ){
-scope.openModalWindow("screenSource");
-return false;
-}
-});
-}
 var requestFiles = [];
 var tempFiles = [];
 var tempScreens = [];
@@ -16090,6 +16082,9 @@ appSettings.setFeatureFlag("inbox", enableInbox);
 appSettings.setFeatureFlag("mentionShortcut", enableMentionShortcut);
 appSettings.setFeatureFlag("shareCommentingLogin", shareCommentingLogin);
 $scope.settings = appSettings.getSettings();
+function hideNavBar () {
+return $scope.share.isEmbed || _.has($location.search(), "hideNavBar");
+}
 function addScreenToHistory( screenID ) {
 if (
 screenHistory.length &&
@@ -16536,6 +16531,7 @@ $scope.isModalOpen = false;
 $scope.mobileLoadingForGifIsReady = config.project.isMobile ? false : true;
 $scope.desktopLoadingForGifIsReady = ! config.project.isMobile ? false : true;
 $scope.enterpriseConfig = config.companyInfo;
+$scope.hideNavBar = hideNavBar();
 if ( shareService.getShare().screenID == 0 ) {
 $scope.defaultScreenIDForShare = screenService.getScreens()[0].id;
 } else {

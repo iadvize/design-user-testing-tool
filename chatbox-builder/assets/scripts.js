@@ -5592,6 +5592,12 @@ _projectID = projectID;
 _screenType = "LoadingScreen";
 uploadButton.trigger("click");
 });
+scope.$on("globalUploadPasteScreen", function( event, projectID, file, filename ) {
+_uploadType = "screen";
+_uploadSource = "screens_tab";
+_projectID = projectID;
+uploader.addFile( file, filename );
+});
 scope.$on('globalUploadPlaceholderScreen', function(e, file, suggestedSort, dividerID, projectID, workflowStatusID){
 _uploadType = "screen";
 _projectID = projectID;
@@ -7498,13 +7504,18 @@ q.reject(error);
 }
 return q.promise;
 }
-function identifyUser( user, currentSubscription ) {
+function identifyUser( user, currentSubscription, additionalTraits ) {
 if ( !$window.analytics || !config || !user || !currentSubscription ) {
 return;
 }
 var nameSplit = splitName( user.name );
 var agent = navigator.userAgent||navigator.vendor||window.opera;
 var ismobile = /(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino|android|ipad|playbook|silk/i.test(agent)||/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(agent.substr(0,4));
+try {
+additionalTraits = Object.assign({}, additionalTraits);
+} catch (error) {
+additionalTraits = {}
+}
 var traits = {
 bucket: user.bucketID,
 createdAt: moment(user.userCreatedAt).unix(),
@@ -7527,6 +7538,7 @@ screenUploadedCount: user.screenUploadedCount,
 invisionVersion: "6.0",
 last_device_used: ismobile ? 'mobile' : 'desktop'
 };
+traits = Object.assign(traits, additionalTraits);
 var momentDate = moment( currentSubscription.projectGracePeriodEndsAt );
 if ( momentDate.isValid() ) {
 traits.gracePeriodEndsAt = momentDate.toJSON();
@@ -7649,7 +7661,11 @@ function segmentIoSync() {
 if ( window.analytics && typeof window.analytics.load === "function" ) {
 if ( config.allowExternalScripts !== false ) {
 window.analytics.load(config.segmentIoKey);
-window.analytics.page();
+window.analytics.page(window.name, {
+url: filterPasswords(document.URL),
+search: filterPasswords(window.location.search),
+referrer: filterPasswords(document.referrer)
+});
 }
 }
 }
@@ -8005,13 +8021,15 @@ errorLogService.exceptionHandler( error );
 }
 }
 function trackGrowthPage(name, category) {
+var sanitizedURL = filterPasswords(document.URL)
+var sanitizedReferrer = filterPasswords(document.referrer)
 var properties = {
 "Page Name": name || "",
 "Category Name": category || "",
 "Title": document.title,
-"URL": document.URL,
+"URL": sanitizedURL,
 "Path": window.location.pathname,
-"Referrer": document.referrer,
+"Referrer": sanitizedReferrer,
 "Optimizely Loaded": !window.optimizelyFailed
 };
 var event = "App - Browsing - Visit Page";
@@ -8021,9 +8039,9 @@ $window.analytics.track("Browsing.PageVisited", {
 page_name: name || "",
 category_name: category || "",
 title: document.title,
-url: document.URL,
+url: sanitizedURL,
 path: window.location.pathname,
-referrer: document.referrer,
+referrer: sanitizedReferrer,
 optimizely_loaded: !window.optimizelyFailed,
 userID: config.userID,
 vendorID: config.vendorID
@@ -8063,6 +8081,12 @@ if ( typeof $window.analytics['track'] === 'function' ) {
 $window.analytics['track'].apply($window.analytics, arguments);
 }
 }
+}
+function filterPasswords(s){
+if ( s.indexOf("password=")>0){
+return s.substring(0,  s.indexOf("password="))
+}
+return s
 }
 return {
 activatePageExperiment: activatePageExperiment,
@@ -16087,6 +16111,14 @@ slackActivity: searchObj.slackActivity
 analyticsService.track("ShareLink.Clicked", eventProperties);
 $location.search("slackActivity", null);
 }
+function searchInspectData(array, id) {
+for (var i=0; i < array.length; i++) {
+if (array[i].hasInspectData) {
+return array[i].id;
+}
+}
+return -1;
+}
 var hasLocalStorage = (function() {
 var x = '__storage_test__';
 try {
@@ -16161,13 +16193,23 @@ if ( ! share.isCommentingAllowed ) {
 return;
 }
 $location.url( $scope.generateCommentUrl() );
+if ($scope.isV2) {
+$scope.commentControl.isBorderExpanded = true;
+}
 };
 $scope.generateCommentUrl = function(){
 return "/screens/" + getCurrentScreenID() + "/comments";
 };
 $scope.navigateToScreenPreview = function() {
 var screenID = getCurrentScreenID();
+if ($scope.isV2) {
+$scope.commentControl.isBorderExpanded = false;
+$timeout(function() {
 $location.url( "/screens/" + screenID );
+}, 300);
+} else {
+$location.url( "/screens/" + screenID );
+}
 };
 $scope.navigateToTargetScreen = function( screenID, maintainScrollPosition ) {
 if ( ! screenID ) {
@@ -16418,6 +16460,14 @@ requestName = prompt("Please enter your name","Bob Barker");
 }
 projectService.sendRequestPermission( config.project.id, $scope.screenID, requestEmail, requestName );
 };
+$scope.searchArray = function(array, id) {
+for (var i=0; i < array.length; i++) {
+if (array[i].id === id) {
+return true;
+}
+}
+return false;
+}
 var renderContext = requestContext.getRenderContext( "", "screenID" );
 var percentOfScreensLoaded = 0;
 var screenHistory = [];
@@ -16478,6 +16528,21 @@ $scope.user = sessionService.user;
 appSettings.setUser( $scope.user );
 $scope.user.isUserValidationRequired = false;
 $scope.user.tempAvatar;
+$scope.isV2 = ( config.enableV2View || false );
+$scope.hasSentRequest = false;
+$scope.UILoaded = false;
+$scope.firstInspectScreen = searchInspectData(config.screens);
+$scope.includeInspectTool = $scope.firstInspectScreen >= 0;
+$scope.sig = "";
+$scope.$on(
+"modalWindowHidden",
+function( event ) {
+$scope.$broadcast( "inspectModalClosed", true );
+}
+);
+$scope.commentControl = {};
+$scope.commentControl.isBorderExpanded = false;
+$scope.screenCnt = ( config.screens.length || 0 );
 if ( appSettings.getSettings().features.shareCommentingLogin && sessionService.user.email ) {
 shareService
 .getExistingUser( sessionService.user.email )
@@ -16515,6 +16580,18 @@ $scope.screenID = getCurrentScreenID();
 if ( !!$scope.xsfrToken ) {
 projectViewingService.incrementScreenCount( $scope.share.id );
 }
+}
+}
+);
+$scope.$on(
+"loadingSequenceCompleted",
+function( event ) {
+if ($scope.isV2) {
+setTimeout(function() {
+$scope.$apply(function() {
+$scope.UILoaded = true;
+});
+}, 500);
 }
 }
 );
@@ -16861,6 +16938,7 @@ function Controller(
 $location,
 $sce,
 $scope,
+$timeout,
 $window,
 _,
 analyticsService,
@@ -16881,6 +16959,9 @@ applyFilters();
 updateUnreadConversations();
 if ( $scope.unreadConversations.length ){
 $scope.showUnreadComments = true;
+}
+if ($scope.$parent.isV2) {
+$scope.$parent.commentControl.isBorderExpanded = true;
 }
 }
 function augmentConversations( conversations ) {
@@ -17206,6 +17287,16 @@ $(el).trigger(getEvent('mousedown'));
 $(el).trigger(getEvent('click'));
 $(el).trigger(getEvent('mouseup'));
 });
+}
+$scope.closeCommentMode = function(event) {
+if ($scope.$parent.isV2) {
+$scope.$parent.commentControl.isBorderExpanded = false;
+$timeout(function() {
+$location.url( "/screens/" + $scope.screenID );
+}, 300);
+} else {
+$location.url( "/screens/" + $scope.screenID );
+}
 }
 $scope.$on(
 "loadingSequenceCompleted",
@@ -18870,6 +18961,60 @@ $scope.errorMessage = modalWindowRequest.getData( 0 );
 })( angular, InVision );
 ;
 ;
+/*! request-access-controller.js */ 
+;
+;
+(function( ng, app ){
+"use strict";
+app.controller( "modal.RequestAccess", Controller );
+function Controller( 
+$scope, 
+projectService,
+Deferred,
+_ 
+) {
+$scope.isAuthenticated = config.user.isAccountAuthenticated;
+$scope.isEnterprise = config.project.companyID > 0;
+$scope.noInspect = true;
+if ($scope.isAuthenticated) {
+Deferred.handlePromise(
+projectService.sendRequestPermission(
+$scope.$parent.project.id,
+$scope.$parent.screen.id,
+config.user.email,
+config.user.name,
+true
+),
+function( response ) {
+var isCompanyMember = response.isCompanyMember, // is the user a member of the company
+isProtoMember = response.isCollaborator; // is the user a member of the proto
+$scope.$parent.sig = response.signature;
+$scope.isUseInspect = ($scope.isEnterprise && isCompanyMember && isProtoMember) || (!$scope.isEnterprise && isProtoMember);
+$scope.isRoleJoin = false;    
+if (config.companyMembership && !$scope.isUseInspect) {
+if (config.companyMembership.canViewAllProjects) {
+$scope.isRoleJoin = true;
+}
+}
+$scope.isRequestAccessPrototype = !$scope.isEnterprise && !isProtoMember;
+$scope.isEntRequestAccessPrototype = $scope.isEnterprise && isCompanyMember && !isProtoMember;
+$scope.isEntRequestAccessTeam = $scope.isEnterprise && !isCompanyMember;
+if ($scope.$parent.includeInspectTool) {
+$scope.noInspect = false;
+}
+},
+function( response ) {
+}
+);
+} else {
+if ($scope.$parent.includeInspectTool) {
+$scope.noInspect = false;
+}
+}
+}
+})( angular, InVision );
+;
+;
 /*! share-tour-controller.js */ 
 ;
 ;
@@ -19830,6 +19975,112 @@ $scope.$apply();
 })( angular, InVision );
 ;
 ;
+/*! form-controller.js */ 
+;
+;
+(function( ng, app ) {
+"use strict";
+app.controller( "toolbar.FormController", Controller );
+function Controller( 
+$scope, 
+$location, 
+mentionUtilities, 
+serviceHelper, 
+projectService,
+Deferred,
+_ 
+) {
+$scope.isEnterprise = config.project.companyID > 0;
+$scope.isAuthenticated = config.user.isAccountAuthenticated;
+function isFormValid() {
+if ( ! $scope.identity.name ) {
+$scope.errorMessage = "Please enter your name.";
+return false;
+}
+if ( ! $scope.identity.email ) {
+$scope.errorMessage = "Please enter your email.";
+return false;
+}
+if ( ! mentionUtilities.isEmailAddress( $scope.identity.email ) ) {
+$scope.errorMessage = "Please enter a valid email address.";
+return false;
+}
+return true;
+}
+$scope.handleKeyDown = function(e) {
+e.preventDefault();
+$scope.submitRequestAccess();
+};
+$scope.submitRequestAccess = function() {
+$scope.errorMessage = "";
+if ( isFormValid() ) {
+$scope.isRequestingAccess = true;
+$scope.sendInspectRequest($scope.identity.email, $scope.identity.name);
+} else {
+}
+}
+$scope.sendInspectRequest = function(email, name) {
+Deferred.handlePromise(
+projectService.sendRequestPermission(
+$scope.$parent.project.id,
+$scope.$parent.screen.id,
+email,
+name
+),
+function( response ) {
+$scope.$parent.sig = response.signature;
+if (response.canJoin || response.isCollaborator) {
+document.location.href = '/d/main/ria/' + $scope.$parent.project.id + '/' + $scope.$parent.screen.id + '/' + $scope.$parent.sig;
+} else if (
+!response.isCollaborator && 
+response.signature != '' &&
+response.error === "Unauthenticated user cannot request access in this context."
+) {
+document.location.href = '/d/main/ria/' + $scope.$parent.project.id + '/' + $scope.$parent.screen.id + '/' + $scope.$parent.sig;
+} else {
+$scope.step = 3;
+$scope.$apply(function() {
+$scope.$parent.hasSentRequest = true;
+});
+}
+},
+function( response ) {
+}
+);
+}
+$scope.isRequestingAccess = false;
+$scope.clickRequestCTA = function() {
+if ($scope.$parent.isUseInspect) {
+document.location.href = '/d/main/#/console/' + $scope.$parent.project.id + '/' + $scope.$parent.screen.id + '/inspect';
+} else if ($scope.$parent.isRoleJoin || (!$scope.isEnterprise && !$scope.isAuthenticated)) {
+document.location.href = '/d/main/ria/' + $scope.$parent.project.id + '/' + $scope.$parent.screen.id + '/' + $scope.$parent.sig;
+} else if ($scope.$parent.isRequestAccessPrototype) {
+$scope.sendInspectRequest(config.user.email, config.user.name);
+} else {
+$scope.showRequestForm();
+}
+}
+$scope.step = 1;
+if ($scope.$parent.hasSentRequest) {
+$scope.step = 3;
+}
+$scope.showRequestForm = function() {
+$scope.step = 2;
+}
+if (!$scope.$parent.includeInspectTool) {
+$scope.step = 4;
+}
+$scope.closeRequestForm = function(){
+$scope.closeModalWindow();
+};
+$scope.identity = {
+name: "",
+email: ""
+};
+}
+})( angular, InVision );
+;
+;
 /*! toolbar-controller.js */ 
 ;
 ;
@@ -19897,6 +20148,7 @@ $scope.isUserOverToolbar ||
 $scope.isShowingComments ||
 $scope.isBrowseOpen ||
 $scope.isShowingIntroduction ||
+$scope.$parent.isInspectOpen || 
 ( !$scope.hasSeenCommentsTooltip )
 ) {
 $scope.isActive = true;
@@ -19950,6 +20202,18 @@ $scope.hasSeenCommentsTooltip = true;
 }
 $scope.commentToolTipVisible = false;
 }
+$scope.$on(
+"inspectModalClosed",
+function( event ) {
+$scope.isInspectOpen = false;
+}
+);
+$scope.toggleRequestAccess = function() {
+if (!$scope.isInspectOpen) {
+$scope.openModalWindow( 'requestAccess' );
+$scope.isInspectOpen = true;
+}
+}
 var renderContext = requestContext.getRenderContext( "", "screenID" );
 var tourData = { hasMultipleScreens: true, hasHotSpots: true  };
 var hasShownAuthModal = false;
@@ -19991,6 +20255,13 @@ $scope.updateActiveStatus();
 $rootScope.$emit('isBrowseOpen', newVal);
 }
 );
+$scope.$watch(
+"isInspectOpen",
+function(newVal) {
+$scope.updateActiveStatus();
+$rootScope.$emit('isInspectOpen', newVal);
+}
+)
 $scope.$watch(
 "isShowingComments",
 function( newValue, oldValue ) {
@@ -20095,6 +20366,9 @@ $scope.$on(
 "loadingSequenceCompleted",
 function( event ) {
 $scope.commentToolTipVisible = !$scope.hasSeenCommentsTooltip;
+if ($scope.$parent.isV2) {
+$scope.commentToolTipVisible = false;
+}
 }
 );
 loadRemoteData();
